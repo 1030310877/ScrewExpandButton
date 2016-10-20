@@ -1,6 +1,7 @@
 package joe.com.screwbutton;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
@@ -22,6 +23,7 @@ public class CircleButton extends ImageView {
     private int mRadius;
     private Matrix mMatrix;
     private Paint mPaint;
+    private int bgColor;
 
     public CircleButton(Context context) {
         this(context, null);
@@ -35,20 +37,19 @@ public class CircleButton extends ImageView {
         super(context, attrs, defStyleAttr);
         mMatrix = new Matrix();
         mPaint = new Paint();
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleButton, defStyleAttr, 0);
+        bgColor = a.getColor(R.styleable.CircleButton_background_color, Color.parseColor("#FF4081"));
+        a.recycle();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        mWidth = Math.min(getMeasuredWidth(), getMeasuredHeight());
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        mWidth = Math.min(width, height);
         mRadius = mWidth / 2;
         int mHeight = mWidth;
         setMeasuredDimension(mWidth, mHeight);
-    }
-
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class CircleButton extends ImageView {
         mPaint.reset();
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mPaint.setAntiAlias(true);
-        mPaint.setColor(Color.parseColor("#FF4081"));
+        mPaint.setColor(bgColor);
         canvas.drawCircle(mRadius, mRadius, mRadius, mPaint);
         mPaint.reset();
         setShader();

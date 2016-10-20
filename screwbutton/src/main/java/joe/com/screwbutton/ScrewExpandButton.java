@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -21,11 +22,13 @@ import java.util.ArrayList;
  * Created by chenqiao on 2016/10/19.
  */
 public class ScrewExpandButton extends CircleButton implements View.OnClickListener {
+    private int subBtnSize;
     private ViewGroup rootLayout;
     private ArrayList<CircleButton> buttons;
     private boolean isExpand = false;
     private FrameLayout container;
     private ArrayList<ScrewAnimator> animators;
+    private OnBtnClickListener btnClickListener;
 
     public ScrewExpandButton(Context context) {
         this(context, null);
@@ -44,16 +47,42 @@ public class ScrewExpandButton extends CircleButton implements View.OnClickListe
         }
         container = new FrameLayout(context);
         setOnClickListener(this);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ScrewExpandButton, defStyleAttr, 0);
+        subBtnSize = a.getDimensionPixelSize(R.styleable.ScrewExpandButton_subbutton_size, -1);
+        a.recycle();
     }
 
-    public void addButtons(Drawable... drawables) {
-        for (Drawable drawable : drawables) {
-            CircleButton btn = new CircleButton(getContext());
-            btn.setImageDrawable(drawable);
-            btn.setAlpha(0f);
-            buttons.add(btn);
+    public void setOnBtnClickListener(OnBtnClickListener btnClickListener) {
+        this.btnClickListener = btnClickListener;
+    }
+
+    public void addButton(Drawable drawable, int btnId) {
+        CircleButton btn = new CircleButton(getContext());
+        btn.setImageDrawable(drawable);
+        btn.setAlpha(0f);
+        btn.setId(btnId);
+        buttons.add(btn);
+        btn.setOnClickListener(buttonsClickListener);
+    }
+
+    public void removeButton(int btnId) {
+        for (CircleButton button : buttons) {
+            if (button.getId() == btnId) {
+                buttons.remove(button);
+                button.setOnClickListener(null);
+                break;
+            }
         }
     }
+
+    private OnClickListener buttonsClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (btnClickListener != null) {
+                btnClickListener.onBtnClick(v.getId());
+            }
+        }
+    };
 
     @Override
     public void onClick(View v) {
@@ -72,7 +101,7 @@ public class ScrewExpandButton extends CircleButton implements View.OnClickListe
         }
     }
 
-    private void collapse() {
+    public void collapse() {
         if (rootLayout != null) {
             rootLayout.removeView(container);
         }
@@ -81,13 +110,16 @@ public class ScrewExpandButton extends CircleButton implements View.OnClickListe
 
     int[] anchor;
 
-    private void expand() {
+    public void expand() {
+        if (subBtnSize < 0) {
+            subBtnSize = getWidth();
+        }
         if (rootLayout != null) {
             rootLayout.addView(container, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         }
         for (int i = 0; i < buttons.size(); i++) {
             CircleButton btn = buttons.get(i);
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(50, 50);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(subBtnSize, subBtnSize);
             params.leftMargin = anchor[0];
             params.topMargin = anchor[1];
             container.addView(btn, params);
@@ -116,6 +148,11 @@ public class ScrewExpandButton extends CircleButton implements View.OnClickListe
         return result;
     }
 
+
+    public interface OnBtnClickListener {
+        void onBtnClick(int btnId);
+    }
+
     public class ScrewAnimator {
         private int index;
         private FrameLayout.LayoutParams params;
@@ -131,10 +168,10 @@ public class ScrewExpandButton extends CircleButton implements View.OnClickListe
 
         private void init() {
             ObjectAnimator alphaAnimator = ObjectAnimator.ofFloat(target, "alpha", 0f, 1f);
-            alphaAnimator.setDuration(500 + 200 * (index + 1));
+            alphaAnimator.setDuration(300 + 150 * (index + 1));
             ValueAnimator animator = ValueAnimator.ofFloat(0f, index / 7f);
             animator.setTarget(target);
-            animator.setDuration(500 + 200 * (index + 1));
+            animator.setDuration(300 + 150 * (index + 1));
             animator.setInterpolator(new DecelerateInterpolator());
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override

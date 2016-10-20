@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleButton">
+        <attr name="background_color" format="color" />
+    </declare-styleable>
+    <declare-styleable name="ScrewExpandButton">
+        <attr name="subbutton_size" format="dimension" />
+    </declare-styleable>
+</resources>

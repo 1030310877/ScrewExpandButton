@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -10,23 +11,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="joe.com.screwexpandbutton.MainActivity">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerInParent="true">
 
         <joe.com.screwbutton.ScrewExpandButton
             android:id="@+id/screwbtn"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_build_white_24dp" />
-    </FrameLayout>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_build_white_24dp"
+            app:background_color="#61a8ff"
+            app:subbutton_size="40dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="193dp"
-        android:text="hello world" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/screwbtn"
+            android:text="展开按钮并不会影响当前布局" />
+    </RelativeLayout>
 </RelativeLayout>
